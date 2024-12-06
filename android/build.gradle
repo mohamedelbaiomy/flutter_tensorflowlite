@@ -1,4 +1,6 @@
+package android
 
+group 'sq.flutter.tflite'
 version '1.0-SNAPSHOT'
 
 buildscript {
