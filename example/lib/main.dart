@@ -32,20 +32,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  File _image;
-  List _recognitions;
+  late File _image;
+  late List _recognitions;
   String _model = mobile;
-  double _imageHeight;
-  double _imageWidth;
+  late double _imageHeight;
+  late double _imageWidth;
   bool _busy = false;
 
   Future predictImagePicker() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image == null) return;
     setState(() {
       _busy = true;
     });
-    predictImage(image);
+    predictImage(File(image.path));
   }
 
   Future predictImage(File image) async {
@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
   Future loadModel() async {
     Tflite.close();
     try {
-      String res;
+      String? res;
       switch (_model) {
         case yolo:
           res = await Tflite.loadModel(
@@ -183,7 +183,7 @@ class _MyAppState extends State<MyApp> {
       imageStd: 127.5,
     );
     setState(() {
-      _recognitions = recognitions;
+      _recognitions = recognitions!;
     });
     int endTime = new DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}ms");
@@ -192,15 +192,15 @@ class _MyAppState extends State<MyApp> {
   Future recognizeImageBinary(File image) async {
     int startTime = new DateTime.now().millisecondsSinceEpoch;
     var imageBytes = (await rootBundle.load(image.path)).buffer;
-    img.Image oriImage = img.decodeJpg(imageBytes.asUint8List());
-    img.Image resizedImage = img.copyResize(oriImage, height: 224, width: 224);
+    img.Image? oriImage = img.decodeJpg(imageBytes.asUint8List());
+    img.Image resizedImage = img.copyResize(oriImage!, height: 224, width: 224);
     var recognitions = await Tflite.runModelOnBinary(
       binary: imageToByteListFloat32(resizedImage, 224, 127.5, 127.5),
       numResults: 6,
       threshold: 0.05,
     );
     setState(() {
-      _recognitions = recognitions;
+      _recognitions = recognitions!;
     });
     int endTime = new DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}ms");
@@ -226,7 +226,7 @@ class _MyAppState extends State<MyApp> {
     //   numResultsPerClass: 1,
     // );
     setState(() {
-      _recognitions = recognitions;
+      _recognitions = recognitions!;
     });
     int endTime = new DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}ms");
@@ -246,7 +246,7 @@ class _MyAppState extends State<MyApp> {
     //   numResultsPerClass: 1,
     // );
     setState(() {
-      _recognitions = recognitions;
+      _recognitions = recognitions!;
     });
     int endTime = new DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}ms");
@@ -261,7 +261,7 @@ class _MyAppState extends State<MyApp> {
     );
 
     setState(() {
-      _recognitions = recognitions;
+      _recognitions = recognitions!;
     });
     int endTime = new DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}");
@@ -277,7 +277,7 @@ class _MyAppState extends State<MyApp> {
     print(recognitions);
 
     setState(() {
-      _recognitions = recognitions;
+      _recognitions = recognitions!;
     });
     int endTime = new DateTime.now().millisecondsSinceEpoch;
     print("Inference took ${endTime - startTime}ms");
@@ -382,7 +382,7 @@ class _MyAppState extends State<MyApp> {
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         alignment: Alignment.topCenter,
-                        image: MemoryImage(_recognitions),
+                        image: MemoryImage(Uint8List(_recognitions.length)),
                         fit: BoxFit.fill)),
                 child: Opacity(opacity: 0.3, child: Image.file(_image))),
       ));

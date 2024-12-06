@@ -1,3 +1,5 @@
+package android
+
 group 'sq.flutter.tflite'
 version '1.0-SNAPSHOT'
 
@@ -34,7 +36,7 @@ android {
     }
 
     dependencies {
-        compile 'org.tensorflow:tensorflow-android:+'
-        compile 'org.tensorflow:tensorflow-lite-gpu:+'
+        implementation 'org.tensorflow:tensorflow-lite:+'
+        implementation 'org.tensorflow:tensorflow-lite-gpu:+'
     }
 }
